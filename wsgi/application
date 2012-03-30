@@ -9,8 +9,8 @@ try:
 except IOError:
     pass
 
-IMPORTANT: Put any additional includes below this line.  If placed above this
-line, it's possible required libraries won't be in your searchable path
+#IMPORTANT: Put any additional includes below this line.  If placed above this
+#line, it's possible required libraries won't be in your searchable path
 
 from web import wsgiserver
 import web
@@ -18,11 +18,12 @@ import utils
 import ConfigParser
 
 config = ConfigParser.RawConfigParser()
-config.read('squeeze.cfg')
+config.read(os.path.join(os.environ['OPENSHIFT_DATA_DIR'], 'squeeze.cfg'))
 
 # Base URL will be used in templates to construct the URLs.
 common = {'base_url': config.get('misc', 'base_url')}
-render = web.template.render('templates/', globals=common)
+render = web.template.render(os.path.join(os.environ['OPENSHIFT_REPO_DIR'],
+                                          'data/templates/'), globals=common)
 
 # List of URLs provided by squeeze.
 urls = (
@@ -38,7 +39,8 @@ urls = (
 db = web.database(dbn = config.get('db', 'type'),
                   user = config.get('db', 'user'),
                   pw = config.get('db', 'pass'),
-                  db = config.get('db', 'name'))
+                  db = config.get('db', 'name'),
+                  host = config.get('db', 'host'))
 
 class index:
     """This is the index page of Squeeze."""
